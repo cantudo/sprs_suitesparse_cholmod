@@ -1,5 +1,0 @@
-cargo:rerun-if-changed=build.rs
-cargo:rustc-link-lib=blas
-cargo:rustc-link-lib=lapack
-cargo:rustc-link-search=native=/home/cantu/U/lab/sim/sprs_suitesparse_cholmod/target/debug/build/suitesparse-src-c9fdccf6ed98d7fd/out
-cargo:rustc-link-lib=static=cholmod
