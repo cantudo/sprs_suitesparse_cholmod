@@ -1,0 +1,20 @@
+[package]
+name = "sprs_suitesparse_cholmod"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ndarray = "0.15.6"
+num-traits = "0.2.16"
+sprs = "0.11.1"
+suitesparse_cholmod_sys = { path = "./suitesparse_cholmod_sys", features = ["static"]}
+
+[workspace]
+members = [
+    "suitesparse_cholmod_sys",
+    "suitesparse-src"
+]
+
+package = {edition = "2021",rust-version = "1.71.1", license = "MIT/Apache-2.0"}

@@ -1,0 +1,22 @@
+[package]
+name = "suitesparse_cholmod_sys"
+description = "Raw bindings to SuiteSparse's CHOLMOD"
+version = "0.3.0"
+authors = ["Vincent Barrielle <vincent.barrielle@m4x.org>"]
+readme = "README.md"
+repository = "https://github.com/sparsemat/sprs"
+keywords = ["sparse", "cholesky", "factorization", "suitesparse", "binding"]
+build = "build.rs"
+links = "cholmod"
+rust-version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[features]
+static = ["dep:suitesparse-src", "suitesparse-src?/cholmod"]
+
+[dependencies]
+suitesparse-src = { version = "0.1.0", path = "../suitesparse-src", features = [ "cholmod" ], optional = true }
+sprs = "0.11.1"
+num-traits = "0.2.16"
+libc = "0.2.147"
