@@ -1,0 +1,3 @@
+[submodule "suitesparse-src/SuiteSparse"]
+	path = suitesparse-src/SuiteSparse
+	url = git@github.com:DrTimothyAldenDavis/SuiteSparse.git
