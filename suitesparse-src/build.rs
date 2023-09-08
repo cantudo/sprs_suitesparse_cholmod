@@ -12,8 +12,12 @@ fn main() {
         // .define("DLONG", None)
         .include("SuiteSparse/COLAMD/Include")
         .file("SuiteSparse/COLAMD/Source/colamd.c")
+        .file("SuiteSparse/COLAMD/Source/colamd_l.c")
+
         .include("SuiteSparse/CCOLAMD/Include")
         .file("SuiteSparse/CCOLAMD/Source/ccolamd.c")
+        .file("SuiteSparse/CCOLAMD/Source/ccolamd_l.c")
+
         .include("SuiteSparse/AMD/Include")
         .file("SuiteSparse/AMD/Source/amd_1.c")
         .file("SuiteSparse/AMD/Source/amd_2.c")
@@ -211,14 +215,14 @@ fn main() {
         .flag("-lblas")
         .compile("cholmod");
 
-    // let suitesparse_config = false;
+    let suitesparse_config = true;
 
-    // if suitesparse_config {
-    //     cc::Build::new()
-    //         .include("SuiteSparse/SuiteSparse_config")
-    //         .file("SuiteSparse/SuiteSparse_config/SuiteSparse_config.c")
-    //         .cargo_metadata(false)
-    //         .compile("suitesparseconfig");
-    // }
+    if suitesparse_config {
+        cc::Build::new()
+            .include("SuiteSparse/SuiteSparse_config")
+            .file("SuiteSparse/SuiteSparse_config/SuiteSparse_config.c")
+            .cargo_metadata(false)
+            .compile("suitesparseconfig");
+    }
     println!("cargo:root={}", root.to_string_lossy());
 }

@@ -7,6 +7,7 @@ fn main() {
         let path_to_cholmod = std::env::var("DEP_SUITESPARSE_SRC_ROOT").unwrap();
         println!("cargo:rustc-link-search=native={path_to_cholmod}");
         println!("cargo:rustc-link-lib=static=cholmod");
+        println!("cargo:rustc-link-lib=static=suitesparseconfig");
     } else {
         println!("cargo:rustc-link-lib=cholmod");
     }
