@@ -299,6 +299,12 @@ extern "C" {
     pub fn cholmod_l_factorize(A: *mut CholmodSparse, L: *mut CholmodFactor, common: *mut CholmodCommon);
 
     pub fn cholmod_l_read_sparse(file: *mut libc::FILE, common: *mut CholmodCommon) -> *mut CholmodSparse;
+
+    pub fn cholmod_l_free_factor(cholmod_factor: *mut *mut CholmodFactor, common: *mut CholmodCommon) -> ffi::c_int;
+
+    pub fn cholmod_l_free_sparse(cholmod_sparse: *mut *mut CholmodSparse, common: *mut CholmodCommon) -> ffi::c_int;
+
+    pub fn cholmod_l_free_dense(cholmod_dense: *mut *mut CholmodDense, common: *mut CholmodCommon) -> ffi::c_int;
 }
 
 #[test]

@@ -4,7 +4,7 @@ use std::convert::Into;
 use sprs::{CsMatViewI, SpIndex};
 use num_traits::Num;
 
-use suitesparse_cholmod_sys::*;
+pub use suitesparse_cholmod_sys::*;
 
 #[allow(non_snake_case)]
 pub fn llt_solve<N, I>(A: CsMatViewI<N, I>, b: Vec<f64>) -> &[f64]
@@ -14,44 +14,14 @@ where
 {
     unsafe {
         let mut common = std::mem::zeroed::<CholmodCommon>();
-        let mut A_cholmod = std::mem::zeroed::<CholmodSparse>();
-        let mut b_cholmod = std::mem::zeroed::<CholmodDense>();
 
-        A_cholmod.nrow = A.rows();
-        A_cholmod.ncol = A.cols();
-        A_cholmod.nzmax = A.nnz();
-
-        let indptr = A.indptr();
-        let indptr_proper = indptr.to_proper();
-
-        A_cholmod.p = indptr_proper.as_ptr() as *mut c_void;
-        A_cholmod.i = A.indices().as_ptr() as *mut c_void;
-        A_cholmod.x = A.data().as_ptr() as *mut ffi::c_void;
-
-        // G_cholmod.nz = 
-        A_cholmod.stype = 1;
-
-        A_cholmod.itype = CHOLMOD_LONG as ffi::c_int;
-        A_cholmod.xtype = CHOLMOD_REAL;
-        A_cholmod.dtype = 0; // double
-        A_cholmod.sorted = 0; // matrix is not sorted
-        A_cholmod.packed = 1; // matrix is in packed form (A_cholmod->nz is ignored)
-
-        
-        b_cholmod.nrow = b.len();
-        b_cholmod.ncol = 1;
-        b_cholmod.nzmax = b.len();
-        b_cholmod.d = b.len();
-        b_cholmod.x = b.as_ptr() as *mut c_void;
-        b_cholmod.xtype = CHOLMOD_REAL;
-        b_cholmod.dtype = 0; // double
-
+        let mut A_cholmod = build_cholmod_sparse(A);
+        let mut b_cholmod = build_cholmod_dense(b);
 
         cholmod_l_start(&mut common);
 
         common.error_handler = Some(err_handler);
-        common.final_ll = 1;
-
+        common.final_ll = 1; // final LL' form (instead of LDL')
 
         /*
         let name = "A";
@@ -81,6 +51,70 @@ where
     }
 }
 
+// #[allow(non_snake_case)]
+// pub fn llt_factorize<N, I>(A: CsMatViewI<N, I>, b: Vec<f64>) -> &CholmodFactor
+//     where
+//         I: SpIndex,
+//         N: Copy + Num + PartialOrd + Into<f64>,
+// {
+//     unsafe {
+//         let L = cholmod_l_analyze(&A_cholmod, &mut common);
+//
+//         &(*L)
+//     }
+// }
+
+/// Builds a CholmodSparse from a sprs CsMatViewI
+/// It assumes the given matrix is symmetric.
+#[allow(non_snake_case)]
+pub fn build_cholmod_sparse<N, I>(A: CsMatViewI<N, I>) -> CholmodSparse
+    where
+        I: SpIndex,
+        N: Copy + Num + PartialOrd + Into<f64>,
+{
+    unsafe {
+        let mut A_cholmod = std::mem::zeroed::<CholmodSparse>();
+
+        A_cholmod.nrow = A.rows();
+        A_cholmod.ncol = A.cols();
+        A_cholmod.nzmax = A.nnz();
+
+        let indptr = A.indptr();
+        let indptr_proper = indptr.to_proper();
+
+        A_cholmod.p = indptr_proper.as_ptr() as *mut c_void;
+        A_cholmod.i = A.indices().as_ptr() as *mut c_void;
+        A_cholmod.x = A.data().as_ptr() as *mut ffi::c_void;
+
+        // Matrix is symmetric
+        A_cholmod.stype = 1;
+
+        A_cholmod.itype = CHOLMOD_LONG as ffi::c_int;
+        A_cholmod.xtype = CHOLMOD_REAL;
+        A_cholmod.dtype = 0; // double
+        A_cholmod.sorted = 0; // matrix is not sorted
+        A_cholmod.packed = 1; // matrix is in packed form (A_cholmod->nz is ignored)
+
+        A_cholmod
+    }
+}
+
+#[allow(non_snake_case)]
+pub fn build_cholmod_dense(b: Vec<f64>) -> CholmodDense {
+    unsafe {
+        let mut b_cholmod = std::mem::zeroed::<CholmodDense>();
+
+        b_cholmod.nrow = b.len();
+        b_cholmod.ncol = 1;
+        b_cholmod.nzmax = b.len();
+        b_cholmod.d = b.len();
+        b_cholmod.x = b.as_ptr() as *mut c_void;
+        b_cholmod.xtype = CHOLMOD_REAL;
+        b_cholmod.dtype = 0; // double
+
+        b_cholmod
+    }
+}
 /* halt if an error occurs */
 #[no_mangle]
 pub extern fn err_handler(
