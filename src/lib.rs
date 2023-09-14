@@ -15,8 +15,8 @@ where
     unsafe {
         let mut common = std::mem::zeroed::<CholmodCommon>();
 
-        let mut A_cholmod = build_cholmod_sparse(A);
-        let mut b_cholmod = build_cholmod_dense(b);
+        let mut A_cholmod = build_cholmod_sparse(&A);
+        let mut b_cholmod = build_cholmod_dense(&b);
 
         cholmod_l_start(&mut common);
 
@@ -67,7 +67,7 @@ where
 /// Builds a CholmodSparse from a sprs CsMatViewI
 /// It assumes the given matrix is symmetric.
 #[allow(non_snake_case)]
-pub fn build_cholmod_sparse<N, I>(A: CsMatViewI<N, I>) -> CholmodSparse
+pub fn build_cholmod_sparse<N, I>(A: &CsMatViewI<N, I>) -> CholmodSparse
     where
         I: SpIndex,
         N: Copy + Num + PartialOrd + Into<f64>,
@@ -100,7 +100,7 @@ pub fn build_cholmod_sparse<N, I>(A: CsMatViewI<N, I>) -> CholmodSparse
 }
 
 #[allow(non_snake_case)]
-pub fn build_cholmod_dense(b: Vec<f64>) -> CholmodDense {
+pub fn build_cholmod_dense(b: &Vec<f64>) -> CholmodDense {
     unsafe {
         let mut b_cholmod = std::mem::zeroed::<CholmodDense>();
 
