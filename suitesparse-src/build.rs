@@ -178,6 +178,7 @@ fn main() {
         // .file("SuiteSparse/CHOLMOD/Modify/t_cholmod_updown.c")
         // .file("SuiteSparse/CHOLMOD/Modify/t_cholmod_updown_numkr.c")
         .file("SuiteSparse/CHOLMOD/Check/cholmod_check.c")
+        .file("SuiteSparse/CHOLMOD/Check/cholmod_l_check.c")
         .file("SuiteSparse/CHOLMOD/Check/cholmod_read.c")
         .file("SuiteSparse/CHOLMOD/Check/cholmod_write.c")
         // .file("SuiteSparse/CHOLMOD/MatrixOps/cholmod_l_check.c")
